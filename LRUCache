@@ -1,0 +1,154 @@
+class LRUCache {
+
+
+    Map<Integer,Node> mp = new HashMap<>();
+    Dllist dll = new Dllist();
+    int capacity ;
+
+    public LRUCache(int capacity) {
+        this.capacity = capacity;
+    }
+    
+    public int get(int key) {
+        if(mp.containsKey(key)){
+            dll.deleteNode(mp.get(key));
+            dll.addNodeToHead(mp.get(key));
+            return mp.get(key).val;
+        }else{
+            return -1;
+        }
+    }
+    
+    public void put(int key, int value) {
+
+
+        if(mp.containsKey(key)){
+              Node tmp=  mp.get(key);
+              tmp.val = value;
+              dll.deleteNode(tmp);
+              dll.addNodeToHead(tmp);
+        }
+        else{
+            if(dll.size<capacity){
+            Node tmp = dll.addNodeToHead(key,value);
+            mp.put(key,tmp);
+            }else{
+                Node tmp = dll.deleteNodeatTail();
+                mp.remove(tmp.key);
+                tmp = dll.addNodeToHead(key,value);
+                mp.put(key,tmp);
+            }
+        }
+        
+    }
+
+
+
+
+}
+
+
+class Dllist{
+
+     
+       Node tail;
+
+       Node head ;
+
+       int size=0;
+
+
+        Dllist(){
+            tail = new Node(-1);
+            head = new Node(-1);
+
+            head.next = tail;
+            tail.prev = head;
+        }
+
+        public Node addNodeToHead(int key, int val){
+
+            Node prevN = head;
+            Node afterN = head.next;
+
+
+            Node temp = new Node(key,val);
+            temp.next = afterN;
+            afterN.prev = temp;
+
+            prevN.next = temp;
+            temp.prev = prevN;
+            size++;
+            return temp;
+
+
+        }
+
+
+        public Node addNodeToHead(Node temp){
+
+            Node prevN = head;
+            Node afterN = head.next;
+
+
+            temp.next = afterN;
+            afterN.prev = temp;
+
+            prevN.next = temp;
+            temp.prev = prevN;
+            size++;
+            return temp;
+
+
+        }
+
+        public Node deleteNodeatTail(){
+            Node tmp = tail.prev;
+            Node prevN = tail.prev.prev;
+            Node afterN = tail;      
+            afterN.prev = prevN;
+            prevN.next = afterN;
+            size--;
+            return tmp;
+        }
+
+
+        public void deleteNode(Node tmp){
+
+            Node prevN = tmp.prev;
+            Node afterN = tmp.next;
+
+           
+            afterN.prev = prevN;
+            prevN.next = afterN;
+
+            tmp.next = null;
+            tmp.prev = null;
+
+            size--;
+        }
+    }
+
+
+       
+
+
+
+
+        class Node{
+
+        int val;
+        int key;
+        Node next;
+        Node prev;
+
+        Node(int val){
+            this.val = val;
+        }
+
+        Node(int key,int val){
+            this.key = key;
+            this.val = val;
+        }
+
+        }
